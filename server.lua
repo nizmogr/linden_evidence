@@ -31,6 +31,7 @@ AddEventHandler('linden_evidence:collectEvidence',function(items)
 			local mdata = { description = ('%s %s [%s]'):format(v.weapon.label, item, v.weapon.metadata.weaponlicense) }
 			exports['hsn-inventory']:addItem(src, 'evidence_bullet', 1, mdata)
 			evidence.bullet[v.id] = nil
+			Citizen.Wait(25)
 		end
 	end
 	for k, v in pairs(items.casing) do
@@ -50,6 +51,7 @@ AddEventHandler('linden_evidence:collectEvidence',function(items)
 			local mdata = { description = ('%s %s [%s]'):format(v.weapon.label, item, v.weapon.metadata.weaponlicense) }
 			exports['hsn-inventory']:addItem(src, 'evidence_casing', 1, mdata)
 			evidence.casing[v.id] = nil
+			Citizen.Wait(25)
 		end
 	end
 	for k, v in pairs(items.blood) do
@@ -57,6 +59,7 @@ AddEventHandler('linden_evidence:collectEvidence',function(items)
 			local mdata = { description = ("%s's blood"):format(v.name) }
 			exports['hsn-inventory']:addItem(src, 'evidence_blood', 1, mdata)
 			evidence.blood[v.id] = nil
+			Citizen.Wait(25)
 		end
 	end
 	TriggerClientEvent('linden_evidence:updateEvidence', -1, evidence)
