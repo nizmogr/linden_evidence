@@ -1,6 +1,8 @@
 # linden_evidence
 WIP evidence system designed to work with ![hsn-inventory](https://github.com/thelindat/hsn-inventory)
 
+<h2 align='center'>On hold while I'm focusing on the development of the inventory!<br>There will be a complete rework.</h1>
+
 
 Creates `Blood Splatter` when player receives damage.  
 * Collecting blood will give item `evidence_blood` with the player's name as the `metadata.description`
