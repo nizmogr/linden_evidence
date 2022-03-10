@@ -76,8 +76,8 @@ AddEventHandler('gameEventTriggered', function (name, args)
 	end
 end)
 
-RegisterNetEvent('hsn-inventory:currentWeapon')
-AddEventHandler('hsn-inventory:currentWeapon', function(item)
+RegisterNetEvent('ox_inventory:currentWeapon')
+AddEventHandler('ox_inventory:currentWeapon', function(item)
 	weapon = item
 end)
 
@@ -137,7 +137,6 @@ CreateThread(function()
 						['WEAPON_PUMPSHOTGUN']='Shotgun Pellets',
 						['WEAPON_PUMPSHOTGUN_MK2']='Shotgun Pellets',
 						['WEAPON_HEAVYSHOTGUN']='Shotgun Pellets',
-
 						['WEAPON_PISTOL']='9mm bullet',
 						['WEAPON_COMBATPISTOL']='.45 bullet',
 						['WEAPON_APPISTOL']='.45 bullet',
@@ -150,7 +149,6 @@ CreateThread(function()
 						['WEAPON_MARKSMANPISTOL']='.22 bullet',
 						['WEAPON_REVOLVER']='.38 bullet',
 						['WEAPON_VINTAGEPISTOL']='9mm bullet',
-
 						['WEAPON_MACHINEPISTOL']='9mm bullet',
 						['WEAPON_MINISMG']='9mm bullet',
 						['WEAPON_MICROSMG']='9mm bullet',
@@ -158,16 +156,12 @@ CreateThread(function()
 						['WEAPON_SMG']='9mm bullet',
 						['WEAPON_SMG_MK2']='9mm bullet',
 						['WEAPON_ASSAULTSMG']='9mm bullet',
-
 						['WEAPON_ASSAULTRIFLE']='7.62 bullet',
 						['WEAPON_ASSAULTRIFLE_MK2']='7.62 bullet',
-
 						['WEAPON_CARBINERIFLE']='5.56 bullet',
 						['WEAPON_CARBINERIFLE_MK2']='5.56 bullet',
-
 						['WEAPON_COMPACTRIFLE']='7.62 bullet',
 						['WEAPON_COMBATRIFLE']='5.56 bullet',
-
 						['WEAPON_ADVANCEDRIFLE']='7.62 bullet',
 						['WEAPON_SPECIALCARBINE']='7.62 bullet',
 						['WEAPON_SPECIALCARBINE_MK2']='7.62 bullet',
@@ -209,7 +203,6 @@ CreateThread(function()
 						['WEAPON_MARKSMANPISTOL']='.22 casing',
 						['WEAPON_REVOLVER']='.38 casing',
 						['WEAPON_VINTAGEPISTOL']='9mm casing',
-
 						['WEAPON_MACHINEPISTOL']='9mm casing',
 						['WEAPON_MINISMG']='9mm casing',
 						['WEAPON_MICROSMG']='9mm casing',
@@ -217,16 +210,12 @@ CreateThread(function()
 						['WEAPON_SMG']='9mm casing',
 						['WEAPON_SMG_MK2']='9mm casing',
 						['WEAPON_ASSAULTSMG']='9mm casing',
-
 						['WEAPON_ASSAULTRIFLE']='7.62 casing',
 						['WEAPON_ASSAULTRIFLE_MK2']='7.62 casing',
-
 						['WEAPON_CARBINERIFLE']='5.56 casing',
 						['WEAPON_CARBINERIFLE_MK2']='5.56 casing',
-
 						['WEAPON_COMPACTRIFLE']='7.62 casing',
 						['WEAPON_COMBATRIFLE']='5.56 casing',
-
 						['WEAPON_ADVANCEDRIFLE']='7.62 casing',
 						['WEAPON_SPECIALCARBINE']='7.62 casing',
 						['WEAPON_SPECIALCARBINE_MK2']='7.62 casing',

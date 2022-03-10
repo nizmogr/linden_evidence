@@ -59,10 +59,10 @@ AddEventHandler('linden_evidence:collectEvidence',function(items)
 			}
 			local item = items[v.weapon.name]
 			if not item then item = 'Bullet' end
-			local mdata = { description = ('%s %s [%s]'):format(v.weapon.label, item, v.weapon.metadata.weaponlicense) }
-			exports['hsn-inventory']:addItem(src, 'evidence_bullet', 1, mdata)
+			local mdata = { description = ('%s %s [%s]'):format(v.weapon.label, item, v.weapon.metadata.serial) }
+			exports.ox_inventory:AddItem(src, 'evidence_bullet', 1, mdata)
 			evidence.bullet[v.id] = nil
-			Citizen.Wait(25)
+			Wait(25)
 		end
 	end
 	for k, v in pairs(items.casing) do
@@ -110,8 +110,8 @@ AddEventHandler('linden_evidence:collectEvidence',function(items)
 			}
 			local item = items[v.weapon.name]
 			if not item then item = 'Bullet Casing' end
-			local mdata = { description = ('%s %s [%s]'):format(v.weapon.label, item, v.weapon.metadata.weaponlicense) }
-			exports['ox_inventory']:addItem(src, 'evidence_casing', 1, mdata)
+			local mdata = { description = ('%s %s [%s]'):format(v.weapon.label, item, v.weapon.metadata.serial) }
+			exports.ox_inventory:AddItem(src, 'evidence_casing', 1, mdata)
 			evidence.casing[v.id] = nil
 			Citizen.Wait(25)
 		end
@@ -119,7 +119,7 @@ AddEventHandler('linden_evidence:collectEvidence',function(items)
 	for k, v in pairs(items.blood) do
 		if evidence.blood[v.id].coords == v.coords then
 			local mdata = { description = ("%s's blood"):format(v.name) }
-			exports['ox_inventory']:addItem(src, 'evidence_blood', 1, mdata)
+			exports.ox_inventory:AddItem(src, 'evidence_blood', 1, mdata)
 			evidence.blood[v.id] = nil
 			Citizen.Wait(25)
 		end
