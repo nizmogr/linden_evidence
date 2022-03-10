@@ -7,6 +7,45 @@ evidence.casing = {}
 evidence.blood = {}
 local bulletCount, casingCount, bloodCount = 0, 0, 0
 
+local bloodtypes = {
+	{
+        name = 'O positive'
+	},
+	{
+        name = 'O negative'
+	},
+	{
+	    name = 'A positive'
+	},
+	{
+	    name = 'A negative'
+	},
+	{
+		name = 'B positive'
+	},
+	{
+		name = 'B negative'
+	},
+	{
+		name = 'AB positive'
+	},
+	{
+		name = 'AB positive'
+	},
+	{
+        name = 'O positive'
+	},
+	{
+	    name = 'A positive'
+	},
+	{
+        name = 'O negative'
+	},
+    {
+		name = 'O positive'
+    },
+}
+
 ESX.RegisterServerCallback('linden_evidence:getEvidence', function(source, cb)
 	cb(evidence)
 end)
@@ -26,7 +65,7 @@ AddEventHandler('linden_evidence:collectEvidence',function(items, mCoords)
 				['WEAPON_PUMPSHOTGUN_MK2']='Pellets',
 				['WEAPON_HEAVYSHOTGUN']='Pellets',
 				['WEAPON_PISTOL']='9mm bullet',
-				['WEAPON_COMBATPISTOL']='.45 bullet',
+				['WEAPON_COMBATPISTOL']='9mm bullet',
 				['WEAPON_APPISTOL']='.45 bullet',
 				['WEAPON_PISTOL50']='.50 bullet',
 				['WEAPON_PISTOL_MK2']='.45 bullet',
@@ -121,7 +160,7 @@ AddEventHandler('linden_evidence:collectEvidence',function(items, mCoords)
 	for k, v in pairs(items.blood) do
 		if evidence.blood[v.id].coords == v.coords then
 			local mCoords = mCoords
-			local mdata = { description = ("%s's blood  \n%s "):format(v.name, mCoords) }
+			local mdata = { description = ("Blood type: %s  \n%s "):format(v.bloodtype, mCoords) }
 			exports.ox_inventory:AddItem(src, 'evidence_blood', 1, mdata)
 			evidence.blood[v.id] = nil
 			Citizen.Wait(25)
@@ -148,6 +187,9 @@ AddEventHandler('linden_evidence:addEvidence',function(weapon, bullet, casing, b
 		bloodCount = #evidence.blood
 		data = {}
 		xPlayer = ESX.GetPlayerFromId(source)
+		local dob = mysplit(xPlayer.get('dateofbirth'), '/')
+		local dobmonth = tonumber(string.format("%u", dob[2]))
+	    data.bloodtype = bloodtypes[dobmonth].name
 		data.name = xPlayer.getName()
 		data.coords = blood
 		data.id = (bloodCount + 1)
@@ -155,3 +197,14 @@ AddEventHandler('linden_evidence:addEvidence',function(weapon, bullet, casing, b
 	end
 	TriggerClientEvent('linden_evidence:updateEvidence', -1, evidence)
 end)
+
+function mysplit (inputstr, sep)
+	if sep == nil then
+			sep = "%s"
+	end
+	local t={}
+	for str in string.gmatch(inputstr, "([^"..sep.."]+)") do
+			table.insert(t, str)
+	end
+	return t
+end
