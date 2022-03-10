@@ -12,7 +12,7 @@ ESX.RegisterServerCallback('linden_evidence:getEvidence', function(source, cb)
 end)
 
 RegisterServerEvent('linden_evidence:collectEvidence')
-AddEventHandler('linden_evidence:collectEvidence',function(items)
+AddEventHandler('linden_evidence:collectEvidence',function(items, mCoords)
 	src = source
 	for k, v in pairs(items.bullet) do
 		if evidence.bullet[v.id].coords == v.coords then
@@ -59,7 +59,8 @@ AddEventHandler('linden_evidence:collectEvidence',function(items)
 			}
 			local item = items[v.weapon.name]
 			if not item then item = 'Bullet' end
-			local mdata = { description = ('%s %s [%s]'):format(v.weapon.label, item, v.weapon.metadata.serial) }
+			local mCoords = mCoords
+			local mdata = { description = ('%s  \n%s  \n%s  \n[%s]'):format(v.weapon.label, mCoords, item, v.weapon.metadata.serial) }
 			exports.ox_inventory:AddItem(src, 'evidence_bullet', 1, mdata)
 			evidence.bullet[v.id] = nil
 			Wait(25)
@@ -68,14 +69,14 @@ AddEventHandler('linden_evidence:collectEvidence',function(items)
 	for k, v in pairs(items.casing) do
 		if evidence.casing[v.id].coords == v.coords then
 			local items = {
-				['WEAPON_ASSAULTSHOTGUN']='Shell',
-				['WEAPON_AUTOSHOTGUN']='Shell',
-				['WEAPON_BULLPUPSHOTGUN']='Shell',
-				['WEAPON_DBSHOTGUN']='Shell',
-				['WEAPON_SAWNOFFSHOTGUN']='Shell',
-				['WEAPON_PUMPSHOTGUN']='Shell',
-				['WEAPON_PUMPSHOTGUN_MK2']='Shell',
-				['WEAPON_HEAVYSHOTGUN']='Shell',
+				['WEAPON_ASSAULTSHOTGUN']='Shotgun Shell 12g',
+				['WEAPON_AUTOSHOTGUN']='Shotgun Shell 12g',
+				['WEAPON_BULLPUPSHOTGUN']='Shotgun Shell 12g',
+				['WEAPON_DBSHOTGUN']='Shotgun Shell 12g',
+				['WEAPON_SAWNOFFSHOTGUN']='Shotgun Shell 12g',
+				['WEAPON_PUMPSHOTGUN']='Shotgun Shell 12g',
+				['WEAPON_PUMPSHOTGUN_MK2']='Shotgun Shell 20g',
+				['WEAPON_HEAVYSHOTGUN']='Shotgun Shell 20g',
 				['WEAPON_PISTOL']='9mm casing',
 				['WEAPON_COMBATPISTOL']='.45 casing',
 				['WEAPON_APPISTOL']='.45 casing',
@@ -109,8 +110,9 @@ AddEventHandler('linden_evidence:collectEvidence',function(items)
 				['WEAPON_BULLPUPRIFLE_MK2']='5.56 casing',
 			}
 			local item = items[v.weapon.name]
+			local mCoords = mCoords
 			if not item then item = 'Bullet Casing' end
-			local mdata = { description = ('%s %s [%s]'):format(v.weapon.label, item, v.weapon.metadata.serial) }
+			local mdata = { description = ('%s  \n%s  \n%s  \n[%s]'):format(v.weapon.label, mCoords, item, v.weapon.metadata.serial) }
 			exports.ox_inventory:AddItem(src, 'evidence_casing', 1, mdata)
 			evidence.casing[v.id] = nil
 			Citizen.Wait(25)
@@ -118,7 +120,8 @@ AddEventHandler('linden_evidence:collectEvidence',function(items)
 	end
 	for k, v in pairs(items.blood) do
 		if evidence.blood[v.id].coords == v.coords then
-			local mdata = { description = ("%s's blood"):format(v.name) }
+			local mCoords = mCoords
+			local mdata = { description = ("%s's blood  \n%s "):format(v.name, mCoords) }
 			exports.ox_inventory:AddItem(src, 'evidence_blood', 1, mdata)
 			evidence.blood[v.id] = nil
 			Citizen.Wait(25)
