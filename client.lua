@@ -81,9 +81,9 @@ AddEventHandler('hsn-inventory:currentWeapon', function(item)
 	weapon = item
 end)
 
-Citizen.CreateThread(function()
+CreateThread(function()
 	while true do
-		Citizen.Wait(0)
+		Wait(0)
 		playerPed = PlayerPedId()
 		if IsPedShooting(playerPed) and synced and not (weapon.name == 'WEAPON_STUNGUN') then
 			local source, bullet, casing = {}, {}, {}, {}
@@ -117,7 +117,7 @@ Citizen.CreateThread(function()
 	end
 end)
 
-Citizen.CreateThread(function()
+CreateThread(function()
 	if IsPedArmed(PlayerPedId(), 7) then
 		SetCurrentPedWeapon(PlayerPedId(), GetHashKey('WEAPON_UNARMED'), true)
 	end
@@ -137,6 +137,43 @@ Citizen.CreateThread(function()
 						['WEAPON_PUMPSHOTGUN']='Shotgun Pellets',
 						['WEAPON_PUMPSHOTGUN_MK2']='Shotgun Pellets',
 						['WEAPON_HEAVYSHOTGUN']='Shotgun Pellets',
+
+						['WEAPON_PISTOL']='9mm bullet',
+						['WEAPON_COMBATPISTOL']='.45 bullet',
+						['WEAPON_APPISTOL']='.45 bullet',
+						['WEAPON_PISTOL50']='.50 bullet',
+						['WEAPON_PISTOL_MK2']='.45 bullet',
+						['WEAPON_REVOLVER_MK2']='.44 bullet',
+						['WEAPON_SNSPISTOL']='.45 bullet',
+						['WEAPON_SNSPISTOL_MK2']='.45 bullet',
+						['WEAPON_HEAVYPISTOL']='.45 bullet',
+						['WEAPON_MARKSMANPISTOL']='.22 bullet',
+						['WEAPON_REVOLVER']='.38 bullet',
+						['WEAPON_VINTAGEPISTOL']='9mm bullet',
+
+						['WEAPON_MACHINEPISTOL']='9mm bullet',
+						['WEAPON_MINISMG']='9mm bullet',
+						['WEAPON_MICROSMG']='9mm bullet',
+						['WEAPON_COMBATPDW']='9mm bullet',
+						['WEAPON_SMG']='9mm bullet',
+						['WEAPON_SMG_MK2']='9mm bullet',
+						['WEAPON_ASSAULTSMG']='9mm bullet',
+
+						['WEAPON_ASSAULTRIFLE']='7.62 bullet',
+						['WEAPON_ASSAULTRIFLE_MK2']='7.62 bullet',
+
+						['WEAPON_CARBINERIFLE']='5.56 bullet',
+						['WEAPON_CARBINERIFLE_MK2']='5.56 bullet',
+
+						['WEAPON_COMPACTRIFLE']='7.62 bullet',
+						['WEAPON_COMBATRIFLE']='5.56 bullet',
+
+						['WEAPON_ADVANCEDRIFLE']='7.62 bullet',
+						['WEAPON_SPECIALCARBINE']='7.62 bullet',
+						['WEAPON_SPECIALCARBINE_MK2']='7.62 bullet',
+						['WEAPON_TACTICALRIFLE']='7.62 bullet',
+						['WEAPON_BULLPUPRIFLE']='5.56 bullet',
+						['WEAPON_BULLPUPRIFLE_MK2']='5.56 bullet',
 					}
 					local item = items[v.weapon.name]
 					if not item then item = 'Bullet' end
@@ -160,6 +197,42 @@ Citizen.CreateThread(function()
 						['WEAPON_PUMPSHOTGUN']='Shotgun Shell',
 						['WEAPON_PUMPSHOTGUN_MK2']='Shotgun Shell',
 						['WEAPON_HEAVYSHOTGUN']='Shotgun Shell',
+						['WEAPON_PISTOL']='9mm casing',
+						['WEAPON_COMBATPISTOL']='.45 casing',
+						['WEAPON_APPISTOL']='.45 casing',
+						['WEAPON_PISTOL50']='.50 casing',
+						['WEAPON_PISTOL_MK2']='.45 casing',
+						['WEAPON_REVOLVER_MK2']='.44 casing',
+						['WEAPON_SNSPISTOL']='.45 casing',
+						['WEAPON_SNSPISTOL_MK2']='.45 casing',
+						['WEAPON_HEAVYPISTOL']='.45 casing',
+						['WEAPON_MARKSMANPISTOL']='.22 casing',
+						['WEAPON_REVOLVER']='.38 casing',
+						['WEAPON_VINTAGEPISTOL']='9mm casing',
+
+						['WEAPON_MACHINEPISTOL']='9mm casing',
+						['WEAPON_MINISMG']='9mm casing',
+						['WEAPON_MICROSMG']='9mm casing',
+						['WEAPON_COMBATPDW']='9mm casing',
+						['WEAPON_SMG']='9mm casing',
+						['WEAPON_SMG_MK2']='9mm casing',
+						['WEAPON_ASSAULTSMG']='9mm casing',
+
+						['WEAPON_ASSAULTRIFLE']='7.62 casing',
+						['WEAPON_ASSAULTRIFLE_MK2']='7.62 casing',
+
+						['WEAPON_CARBINERIFLE']='5.56 casing',
+						['WEAPON_CARBINERIFLE_MK2']='5.56 casing',
+
+						['WEAPON_COMPACTRIFLE']='7.62 casing',
+						['WEAPON_COMBATRIFLE']='5.56 casing',
+
+						['WEAPON_ADVANCEDRIFLE']='7.62 casing',
+						['WEAPON_SPECIALCARBINE']='7.62 casing',
+						['WEAPON_SPECIALCARBINE_MK2']='7.62 casing',
+						['WEAPON_TACTICALRIFLE']='7.62 casing',
+						['WEAPON_BULLPUPRIFLE']='5.56 casing',
+						['WEAPON_BULLPUPRIFLE_MK2']='5.56 casing',
 					}
 					local item = items[v.weapon.name]
 					if not item then item = 'Bullet Casing' end
