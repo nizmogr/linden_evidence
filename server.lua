@@ -7,6 +7,8 @@ evidence.casing = {}
 evidence.blood = {}
 local bulletCount, casingCount, bloodCount = 0, 0, 0
 
+-- Blood types will return in descending format from jan-dec not the most elegant solution, but serviceable without core adjustments to esx
+
 local bloodtypes = {
 	{
         name = 'O positive'
@@ -42,7 +44,7 @@ local bloodtypes = {
         name = 'O negative'
 	},
     {
-		name = 'O positive'
+		name = 'AB negative'
     },
 }
 
@@ -102,7 +104,7 @@ AddEventHandler('linden_evidence:collectEvidence',function(items, mCoords)
 			local mdata = { description = ('%s  \n%s  \n%s  \n[%s]'):format(v.weapon.label, mCoords, item, v.weapon.metadata.serial) }
 			exports.ox_inventory:AddItem(src, 'evidence_bullet', 1, mdata)
 			evidence.bullet[v.id] = nil
-			Wait(25)
+			Wait(50)
 		end
 	end
 	for k, v in pairs(items.casing) do
@@ -154,7 +156,7 @@ AddEventHandler('linden_evidence:collectEvidence',function(items, mCoords)
 			local mdata = { description = ('%s  \n%s  \n%s  \n[%s]'):format(v.weapon.label, mCoords, item, v.weapon.metadata.serial) }
 			exports.ox_inventory:AddItem(src, 'evidence_casing', 1, mdata)
 			evidence.casing[v.id] = nil
-			Citizen.Wait(25)
+			Wait(50)
 		end
 	end
 	for k, v in pairs(items.blood) do
@@ -163,7 +165,7 @@ AddEventHandler('linden_evidence:collectEvidence',function(items, mCoords)
 			local mdata = { description = ("Blood type: %s  \n%s "):format(v.bloodtype, mCoords) }
 			exports.ox_inventory:AddItem(src, 'evidence_blood', 1, mdata)
 			evidence.blood[v.id] = nil
-			Citizen.Wait(25)
+			Wait(50)
 		end
 	end
 	TriggerClientEvent('linden_evidence:updateEvidence', -1, evidence)
@@ -188,7 +190,7 @@ AddEventHandler('linden_evidence:addEvidence',function(weapon, bullet, casing, b
 		data = {}
 		xPlayer = ESX.GetPlayerFromId(source)
 		local dob = mysplit(xPlayer.get('dateofbirth'), '/')
-		local dobmonth = tonumber(string.format("%u", dob[2]))
+		local dobmonth = tonumber(string.format("%u", dob[1])) -- edit the index inside of [] to fit your date of birth format either mm/dd/yyyy[1] or dd/mm/yyyy[2]
 	    data.bloodtype = bloodtypes[dobmonth].name
 		data.name = xPlayer.getName()
 		data.coords = blood

@@ -54,7 +54,7 @@ local lastTriggered = GetGameTimer()
 AddEventHandler('gameEventTriggered', function (name, args)
 	if name == 'CEventNetworkEntityDamage' then
 		local timer = GetGameTimer()
-		if timer - lastTriggered > 500 then
+		if timer - lastTriggered > 1000 then
 			local victim = args[1]
 			local attacker = args[2]
 			local isFatal = args[4]
@@ -82,11 +82,11 @@ AddEventHandler('ox_inventory:currentWeapon', function(item)
 end)
 
 CreateThread(function()
-	local shoothread = 250
+	local shoothread = 1000
 	while true do
 		playerPed = PlayerPedId()
 		if IsPlayerFreeAiming(PlayerId()) then
-			shoothread = 0
+			shoothread = 5
 			if IsPedShooting(playerPed) and synced and not (weapon.name == 'WEAPON_STUNGUN') then
 				local source, bullet, casing = {}, {}, {}, {}
 				local hitEntity, entity = GetEntityPlayerIsFreeAimingAt(PlayerId())
@@ -97,12 +97,11 @@ CreateThread(function()
 					coords = GetEntityCoords(source)
 					impactCoords = vector3(impactCoords.x, impactCoords.y, (impactCoords.z + 0.5))
 					coords = vector3(coords.x, coords.y, (coords.z + 0.5))
-
 					local ground, impactZ
 					repeat
 						ground, impactZ = GetGroundZFor_3dCoord(impactCoords.x, impactCoords.y, impactCoords.z, 1)
 					until ground
-					impactCoords = vector3(impactCoords.x, impactCoords.y, (impactZ + 0.5))
+					impactCoords = vector3(impactCoords.x, impactCoords.y, (impactZ + 0.6))
 
 					local ground, coordZ
 					repeat
@@ -113,6 +112,7 @@ CreateThread(function()
 					bullet.coords = impactCoords
 					casing.coords = casingCoords
 					weapondata = weapon
+					Wait(100)
 					TriggerServerEvent('linden_evidence:addEvidence', weapondata, bullet, casing)
 				end
 			end
@@ -128,7 +128,7 @@ CreateThread(function()
 	while true do
 		canCollect = false		
 		playerCoords = GetEntityCoords(PlayerPedId())
-		if GetSelectedPedWeapon(PlayerPedId()) == `WEAPON_FLASHLIGHT` and IsPlayerFreeAiming(PlayerId()) then
+		if GetSelectedPedWeapon(PlayerPedId()) == `WEAPON_FLASHLIGHT` and IsPlayerFreeAiming(PlayerId()) then -- Edit this to whatever check you feel like adding to prevent evidence from showing up 100% of the time without actively looking
 			if nearbyItems ~= nil and synced then
 				for k, v in pairs(evidence.bullet) do
 					local distance = #(playerCoords - v.coords)
@@ -175,10 +175,9 @@ CreateThread(function()
 							['WEAPON_BULLPUPRIFLE_MK2']='5.56 bullet',
 						}
 						local item = items[v.weapon.name]
-						local mCoords = "Found near" .. GetStreetNameFromHashKey(GetStreetNameAtCoord(playerCoords.x, playerCoords.y, playerCoords.z))
 						if not item then item = 'Bullet' end
 						Draw3DText(v.coords.x, v.coords.y, v.coords.z, item)
-						if distance < 1.0 then
+						if distance < 1.5 then
 							nearbyItems.bullet[k] = v
 							canCollect = true
 						elseif nearbyItems.bullet[k] then nearbyItems.bullet[k] = nil end
@@ -230,10 +229,9 @@ CreateThread(function()
 							['WEAPON_BULLPUPRIFLE_MK2']='5.56 casing',
 						}
 						local item = items[v.weapon.name]
-						local mCoords = GetStreetNameFromHashKey(GetStreetNameAtCoord(playerCoords.x, playerCoords.y, playerCoords.z))
 						if not item then item = 'Bullet Casing' end
 						Draw3DText(v.coords.x, v.coords.y, v.coords.z, item)
-						if distance < 1.0 then
+						if distance < 1.5 then
 							nearbyItems.casing[k] = v
 							canCollect = true
 						elseif nearbyItems.casing[k] then nearbyItems.casing[k] = nil end
@@ -244,7 +242,7 @@ CreateThread(function()
 					local distance = #(playerCoords - v.coords)
 					if distance < 2.0 then
 						Draw3DText(v.coords.x, v.coords.y, (v.coords.z - 0.5), 'DNA evidence')
-						if distance < 1.0 then
+						if distance < 1.5 then
 							nearbyItems.blood[k] = v
 							canCollect = true
 						elseif nearbyItems.blood[k] then nearbyItems.blood[k] = nil end
@@ -257,14 +255,14 @@ CreateThread(function()
 						nearbyItems = nil
 						exports['mythic_progbar']:Progress({
 							name = "useitem",
-							duration = 2000,
+							duration = 5000,
 							label = "Collecting evidence",
 							useWhileDead = false,
 							canCancel = false,
 							controlDisables = { disableMovement = true, disableCarMovement = true, disableMouse = false, disableCombat = true },
 							animation = { animDict = 'pickup_object', anim = 'putdown_low', flags = 48 }
 						}, function()
-							local mCoords = "Found near : " .. GetStreetNameFromHashKey(GetStreetNameAtCoord(playerCoords.x, playerCoords.y, playerCoords.z))
+							local mCoords = "Found near : " .. GetStreetNameFromHashKey(GetStreetNameAtCoord(playerCoords.x, playerCoords.y, playerCoords.z)) -- Additional string for flavor
 							TriggerServerEvent('linden_evidence:collectEvidence', items, mCoords)
 							nearbyItems = {}
 							nearbyItems.bullet = {}
@@ -273,8 +271,12 @@ CreateThread(function()
 							synced = false
 						end)
 					end
+				else
+					Wait(500)
 				end
 			end
+		else
+			Wait(1000)
 		end
 		Wait(0)
 	end
