@@ -51,29 +51,26 @@ function Draw3DText(x, y, z, text)
 end
 
 local lastTriggered = GetGameTimer()
-AddEventHandler('gameEventTriggered', function (name, args)
-	if name == 'CEventNetworkEntityDamage' then
+CreateThread(function()
+    while true do
+        Wait(10)
 		local timer = GetGameTimer()
-		if timer - lastTriggered > 1000 then
-			local victim = args[1]
-			local attacker = args[2]
-			local isFatal = args[4]
-			local weaponHash = args[5]
-			local isMelee = args[10]
-
-			if not playerPed then playerPed = PlayerPedId() end
-			if victim == playerPed then
-				coords = GetEntityCoords(playerPed)
-				local ground, impactZ
-				repeat
-					ground, impactZ = GetGroundZFor_3dCoord(coords.x, coords.y, coords.z, 1)
-				until ground
-				coords = vector3(coords.x, coords.y, (impactZ + 1.0))
-				TriggerServerEvent('linden_evidence:addEvidence', false, false, false, coords)
-				lastTriggered = GetGameTimer()
+        if HasPedBeenDamagedByWeapon(PlayerPedId(), 0, 2) then
+			if math.random(5) > 3 then -- add or remove at your leisure
+				if timer - lastTriggered > 1000 then
+					if not playerPed then playerPed = PlayerPedId() end
+					coords = GetEntityCoords(playerPed)
+					local ground, impactZ
+					repeat
+						ground, impactZ = GetGroundZFor_3dCoord(coords.x, coords.y, coords.z, 1)
+					until ground
+					coords = vector3(coords.x, coords.y, (impactZ + 1.0))
+					TriggerServerEvent('linden_evidence:addEvidence', false, false, false, coords)
+					lastTriggered = GetGameTimer()
+				end
 			end
-		end
-	end
+        end
+    end
 end)
 
 RegisterNetEvent('ox_inventory:currentWeapon')
@@ -86,34 +83,36 @@ CreateThread(function()
 	while true do
 		playerPed = PlayerPedId()
 		if IsPlayerFreeAiming(PlayerId()) then
-			shoothread = 5
+			shoothread = 0
 			if IsPedShooting(playerPed) and synced and not (weapon.name == 'WEAPON_STUNGUN') then
-				local source, bullet, casing = {}, {}, {}, {}
-				local hitEntity, entity = GetEntityPlayerIsFreeAimingAt(PlayerId())
-				local impacted, impactCoords = GetPedLastWeaponImpactCoord(playerPed)
-				if impacted then
-					local curWeapon = GetSelectedPedWeapon(playerPed)
-					source = PlayerPedId()
-					coords = GetEntityCoords(source)
-					impactCoords = vector3(impactCoords.x, impactCoords.y, (impactCoords.z + 0.5))
-					coords = vector3(coords.x, coords.y, (coords.z + 0.5))
-					local ground, impactZ
-					repeat
-						ground, impactZ = GetGroundZFor_3dCoord(impactCoords.x, impactCoords.y, impactCoords.z, 1)
-					until ground
-					impactCoords = vector3(impactCoords.x, impactCoords.y, (impactZ + 0.6))
-
-					local ground, coordZ
-					repeat
-						ground, coordZ = GetGroundZFor_3dCoord(coords.x, coords.y, coords.z, 1)
-					until ground
-					casingCoords = vector3(coords.x, coords.y, (coordZ + 0.9))
-
-					bullet.coords = impactCoords
-					casing.coords = casingCoords
-					weapondata = weapon
-					Wait(100)
-					TriggerServerEvent('linden_evidence:addEvidence', weapondata, bullet, casing)
+				if math.random(5) > 3 then -- add or remove at your leisure
+					local source, bullet, casing = {}, {}, {}, {}
+					local hitEntity, entity = GetEntityPlayerIsFreeAimingAt(PlayerId())
+					local impacted, impactCoords = GetPedLastWeaponImpactCoord(playerPed)
+					if impacted then
+						local curWeapon = GetSelectedPedWeapon(playerPed)
+						source = PlayerPedId()
+						coords = GetEntityCoords(source)
+						impactCoords = vector3(impactCoords.x, impactCoords.y, (impactCoords.z + 0.5))
+						coords = vector3(coords.x, coords.y, (coords.z + 0.5))
+						local ground, impactZ
+						repeat
+							ground, impactZ = GetGroundZFor_3dCoord(impactCoords.x, impactCoords.y, impactCoords.z, 1)
+						until ground
+						impactCoords = vector3(impactCoords.x, impactCoords.y, (impactZ + 0.6))
+						
+						local ground, coordZ
+						repeat
+							ground, coordZ = GetGroundZFor_3dCoord(coords.x, coords.y, coords.z, 1)
+						until ground
+						casingCoords = vector3(coords.x, coords.y, (coordZ + 0.9))
+						
+						bullet.coords = impactCoords
+						casing.coords = casingCoords
+						weapondata = weapon
+						TriggerServerEvent('linden_evidence:addEvidence', weapondata, bullet, casing)
+						Wait(25)
+					end
 				end
 			end
 		end
@@ -123,16 +122,19 @@ end)
 
 CreateThread(function()
 	if IsPedArmed(PlayerPedId(), 7) then
-		SetCurrentPedWeapon(PlayerPedId(), GetHashKey('WEAPON_UNARMED'), true)
+		SetCurrentPedWeapon(PlayerPedId(), `WEAPON_UNARMED`, true)
 	end
+	local sleepthreadfornow = 1000
 	while true do
-		canCollect = false		
+		canCollect = false
 		playerCoords = GetEntityCoords(PlayerPedId())
-		if GetSelectedPedWeapon(PlayerPedId()) == `WEAPON_FLASHLIGHT` and IsPlayerFreeAiming(PlayerId()) then -- Edit this to whatever check you feel like adding to prevent evidence from showing up 100% of the time without actively looking
+		if GetSelectedPedWeapon(PlayerPedId()) == `WEAPON_FLASHLIGHT` and GetPedConfigFlag(PlayerPedId(), 78, true) then -- Edit this to whatever check you feel like adding to prevent evidence from showing up 100% of the time without actively looking
+			sleepthreadfornow = 50
 			if nearbyItems ~= nil and synced then
+				sleepthreadfornow = 0
 				for k, v in pairs(evidence.bullet) do
 					local distance = #(playerCoords - v.coords)
-					if distance < 2.0 then
+					if distance < 5.0 then
 						local items = {
 							['WEAPON_ASSAULTSHOTGUN']='Shotgun Pellets',
 							['WEAPON_AUTOSHOTGUN']='Shotgun Pellets',
@@ -166,8 +168,9 @@ CreateThread(function()
 							['WEAPON_CARBINERIFLE']='5.56 bullet',
 							['WEAPON_CARBINERIFLE_MK2']='5.56 bullet',
 							['WEAPON_COMPACTRIFLE']='7.62 bullet',
-							['WEAPON_COMBATRIFLE']='5.56 bullet',
+							['WEAPON_COMBATRIFLE']='7.62 bullet',
 							['WEAPON_ADVANCEDRIFLE']='7.62 bullet',
+							['WEAPON_PROTORIFLE']='5.56 bullet',
 							['WEAPON_SPECIALCARBINE']='7.62 bullet',
 							['WEAPON_SPECIALCARBINE_MK2']='7.62 bullet',
 							['WEAPON_TACTICALRIFLE']='7.62 bullet',
@@ -177,16 +180,15 @@ CreateThread(function()
 						local item = items[v.weapon.name]
 						if not item then item = 'Bullet' end
 						Draw3DText(v.coords.x, v.coords.y, v.coords.z, item)
-						if distance < 1.5 then
+						if distance < 1.2 then
 							nearbyItems.bullet[k] = v
 							canCollect = true
 						elseif nearbyItems.bullet[k] then nearbyItems.bullet[k] = nil end
 					elseif nearbyItems.bullet[k] then nearbyItems.bullet[k] = nil end
 				end
-				
 				for k, v in pairs(evidence.casing) do
 					local distance = #(playerCoords - v.coords)
-					if distance < 2.0 then
+					if distance < 5.0 then
 						local items = {
 							['WEAPON_ASSAULTSHOTGUN']='Shotgun Shell',
 							['WEAPON_AUTOSHOTGUN']='Shotgun Shell',
@@ -220,8 +222,9 @@ CreateThread(function()
 							['WEAPON_CARBINERIFLE']='5.56 casing',
 							['WEAPON_CARBINERIFLE_MK2']='5.56 casing',
 							['WEAPON_COMPACTRIFLE']='7.62 casing',
-							['WEAPON_COMBATRIFLE']='5.56 casing',
+							['WEAPON_COMBATRIFLE']='7.62 casing',
 							['WEAPON_ADVANCEDRIFLE']='7.62 casing',
+							['WEAPON_PROTORIFLE']='5.56 casing',
 							['WEAPON_SPECIALCARBINE']='7.62 casing',
 							['WEAPON_SPECIALCARBINE_MK2']='7.62 casing',
 							['WEAPON_TACTICALRIFLE']='7.62 casing',
@@ -231,18 +234,17 @@ CreateThread(function()
 						local item = items[v.weapon.name]
 						if not item then item = 'Bullet Casing' end
 						Draw3DText(v.coords.x, v.coords.y, v.coords.z, item)
-						if distance < 1.5 then
+						if distance < 1.8 then
 							nearbyItems.casing[k] = v
 							canCollect = true
 						elseif nearbyItems.casing[k] then nearbyItems.casing[k] = nil end
 					elseif nearbyItems.casing[k] then nearbyItems.casing[k] = nil end
 				end
-
 				for k, v in pairs(evidence.blood) do
 					local distance = #(playerCoords - v.coords)
-					if distance < 2.0 then
+					if distance < 5.0 then
 						Draw3DText(v.coords.x, v.coords.y, (v.coords.z - 0.5), 'DNA evidence')
-						if distance < 1.5 then
+						if distance < 1.8 then
 							nearbyItems.blood[k] = v
 							canCollect = true
 						elseif nearbyItems.blood[k] then nearbyItems.blood[k] = nil end
@@ -271,13 +273,9 @@ CreateThread(function()
 							synced = false
 						end)
 					end
-				else
-					Wait(500)
 				end
 			end
-		else
-			Wait(1000)
 		end
-		Wait(0)
+		Wait(sleepthreadfornow)
 	end
 end)
