@@ -50,27 +50,26 @@ function Draw3DText(x, y, z, text)
 	end
 end
 
-local lastTriggered = GetGameTimer()
+-- This following blocks patches the thread deadloop for inclined surfaces
+
+local lastTriggered = GetCloudTimeAsInt()
 CreateThread(function()
-    while true do
-        Wait(10)
-		local timer = GetGameTimer()
-        if HasPedBeenDamagedByWeapon(PlayerPedId(), 0, 2) then
-			if math.random(5) > 3 then -- add or remove at your leisure
-				if timer - lastTriggered > 1000 then
+	while true do
+		Wait(10)
+		local timer = GetCloudTimeAsInt()
+		if HasPedBeenDamagedByWeapon(PlayerPedId(), 0, 2) then
+			if math.random(5) > 3 then
+				if timer - lastTriggered > 5000 then
 					if not playerPed then playerPed = PlayerPedId() end
 					coords = GetEntityCoords(playerPed)
-					local ground, impactZ
-					repeat
-						ground, impactZ = GetGroundZFor_3dCoord(coords.x, coords.y, coords.z, 1)
-					until ground
-					coords = vector3(coords.x, coords.y, (impactZ + 1.0))
+					coords = vector3(coords.x, coords.y, coords.z + 1.0)
 					TriggerServerEvent('linden_evidence:addEvidence', false, false, false, coords)
-					lastTriggered = GetGameTimer()
+					lastTriggered = GetCloudTimeAsInt()
+					Wait(5000)
 				end
 			end
-        end
-    end
+		end
+	end
 end)
 
 RegisterNetEvent('ox_inventory:currentWeapon')
@@ -79,42 +78,38 @@ AddEventHandler('ox_inventory:currentWeapon', function(item)
 end)
 
 CreateThread(function()
-	local shoothread = 1000
+	shoothread = 1000
 	while true do
+		Wait(10)
 		playerPed = PlayerPedId()
 		if IsPlayerFreeAiming(PlayerId()) then
-			shoothread = 0
-			if IsPedShooting(playerPed) and synced and not (weapon.name == 'WEAPON_STUNGUN') then
-				if math.random(5) > 3 then -- add or remove at your leisure
-					local source, bullet, casing = {}, {}, {}, {}
-					local hitEntity, entity = GetEntityPlayerIsFreeAimingAt(PlayerId())
-					local impacted, impactCoords = GetPedLastWeaponImpactCoord(playerPed)
-					if impacted then
-						local curWeapon = GetSelectedPedWeapon(playerPed)
-						source = PlayerPedId()
-						coords = GetEntityCoords(source)
-						impactCoords = vector3(impactCoords.x, impactCoords.y, (impactCoords.z + 0.5))
-						coords = vector3(coords.x, coords.y, (coords.z + 0.5))
-						local ground, impactZ
-						repeat
-							ground, impactZ = GetGroundZFor_3dCoord(impactCoords.x, impactCoords.y, impactCoords.z, 1)
-						until ground
-						impactCoords = vector3(impactCoords.x, impactCoords.y, (impactZ + 0.6))
-						
-						local ground, coordZ
-						repeat
-							ground, coordZ = GetGroundZFor_3dCoord(coords.x, coords.y, coords.z, 1)
-						until ground
-						casingCoords = vector3(coords.x, coords.y, (coordZ + 0.9))
-						
-						bullet.coords = impactCoords
-						casing.coords = casingCoords
-						weapondata = weapon
-						TriggerServerEvent('linden_evidence:addEvidence', weapondata, bullet, casing)
-						Wait(25)
-					end
+			shoothread = 10
+			if IsPedShooting(playerPed) and not IsPedInAnyVehicle(playerPed, false) and synced and not (weapon.name == 'WEAPON_STUNGUN')  then
+				local source, bullet, casing = {}, {}, {}, {}
+				local hitEntity, entity = GetEntityPlayerIsFreeAimingAt(PlayerId())
+				local impacted, impactCoords = GetPedLastWeaponImpactCoord(playerPed)
+				Wait(50)
+				if impacted then
+					local curWeapon = GetSelectedPedWeapon(playerPed)
+					source = PlayerPedId()
+					coords = GetEntityCoords(source)
+					impactCoords = vector3(impactCoords.x, impactCoords.y, (impactCoords.z - 0.5))
+					coords = vector3(coords.x, coords.y, (coords.z + 0.5))
+					local ground, impactZ
+					repeat
+						ground, impactZ = GetGroundZFor_3dCoord(impactCoords.x, impactCoords.y, impactCoords.z, 1)
+					until ground or impactCoords.z
+					impactCoords = vector3(impactCoords.x, impactCoords.y, impactCoords.z - 0.6)
+					casingCoords = vector3(coords.x, coords.y, coords.z + 0.6) -- adjust the +'s and minuses to your lil hearts content
+					bullet.coords = impactCoords
+					casing.coords = casingCoords
+					weapondata = weapon
+					TriggerServerEvent('linden_evidence:addEvidence', weapondata, bullet, casing)
+					Wait(1000)
 				end
 			end
+		else
+			Wait(1000)
 		end
 		Wait(shoothread)
 	end
@@ -279,3 +274,32 @@ CreateThread(function()
 		Wait(sleepthreadfornow)
 	end
 end)
+--[[ uncomment these two if you run into a problem with shitloads of evidence bits that you can't get rid of, one's obviously a delayed scan and if you happen to be around some stuff it'll clean it, the other is a forced cleansing of an area.
+
+RegisterCommand('clearevidence', function(source, args)
+	if source ~= nil then
+		if ESX.PlayerData.job == "police" then
+			if canCollect then
+				nearbyItems = {}
+				nearbyItems.bullet = {}
+				nearbyItems.casing = {}
+				nearbyItems.blood = {}
+				exports.mythic_notify:SendAlert('inform', 'Evidence cleared', 5000)
+			end
+		end
+	end
+end)
+
+CreateThread(function()
+	while true do
+		Wait(1000 * 60 * 30)
+		print('clear evidence')
+		--		local evidence = {}
+		nearbyItems = {}
+		nearbyItems.bullet = {}
+		nearbyItems.casing = {}
+		nearbyItems.blood = {}
+	end
+end)
+
+]]
