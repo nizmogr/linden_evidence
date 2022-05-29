@@ -6,6 +6,7 @@ evidence.bullet = {}
 evidence.casing = {}
 evidence.blood = {}
 local bulletCount, casingCount, bloodCount = 0, 0, 0
+local ox_inventory = exports.ox_inventory
 
 -- Blood types will return in descending format from jan-dec not the most elegant solution, but serviceable without core adjustments to esx
 
